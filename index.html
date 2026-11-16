@@ -88,6 +88,11 @@ const KINDS = {
   '빨래건조대(1.4×0.6)':   {w:1.4,d:0.6,h:1.0,c:0xcccccc},
   '벙커침대 더블(2.1×1.45, 높이 1.8)': {w:2.1,d:1.45,h:1.8,c:0x333333,kind:'bunk'},
   '계단식 수납장(1.0×0.35)': {w:1.0,d:0.35,h:1.05,c:0xf2f2f2,kind:'step'},
+  '심레이싱 시트 펼침(1.55×0.83)': {w:1.55,d:0.83,h:1.0,c:0x222222},
+  '심레이싱 시트 접음(1.06×0.83)': {w:1.06,d:0.83,h:0.3,c:0x222222},
+  '벙커 걸이책상 2000(2.0×0.55)': {w:1.99,d:0.55,h:0.03,c:0xf5f5f5,y:0.76},
+  '모니터 27인치(책상 위)': {w:0.62,d:0.2,h:0.45,c:0x111111,y:0.79},
+  '컴퓨터 본체':          {w:0.22,d:0.45,h:0.45,c:0x444444},
   '러그(1.6×2.3)':         {w:1.6,d:2.3,h:0.02,c:0xc9b79c},
 };
 const DEFAULT = [
@@ -239,7 +244,7 @@ function mkFurniture(f){
 }
 function place(g){
   const {f} = g.userData;
-  g.position.set(f.x, f.lv ? Y2 : 0, f.z);
+  g.position.set(f.x, (f.lv ? Y2 : 0) + (g.userData.spec.y||0), f.z);
   g.rotation.y = (f.r||0) * Math.PI/2;
 }
 function footprint(g){
@@ -305,7 +310,7 @@ renderer.domElement.addEventListener('pointerdown', e=>{
   if (h){
     const g = h.object.userData.owner; select(g);
     controls.enabled = false;
-    plane.set(new THREE.Vector3(0,1,0), -(g.userData.f.lv ? Y2 : 0));
+    plane.set(new THREE.Vector3(0,1,0), -((g.userData.f.lv ? Y2 : 0)+(g.userData.spec.y||0)));
     ray.ray.intersectPlane(plane, hit);
     const local = house.worldToLocal(hit.clone());
     offset.set(g.userData.f.x - local.x, 0, g.userData.f.z - local.z);
