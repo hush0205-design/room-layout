@@ -29,6 +29,10 @@
     <button id="stairDir">계단 방향 바꾸기</button>
     <button id="mirror">계단을 반대쪽 벽으로</button>
   </div>
+  <div class="row"><b>배치안</b>
+    <select id="preset"></select>
+    <button id="loadPreset">불러오기</button>
+  </div>
   <div class="row"><b>가구 추가</b>
     <select id="kind"></select>
     <select id="lvl"><option value="0">1층</option><option value="1">2층</option></select>
@@ -38,7 +42,7 @@
   <div class="row">
     <button id="rot">90° 회전</button>
     <button id="del">삭제</button>
-    <button id="reset">처음 배치로</button>
+    <button id="reset">가구 모두 치우기</button>
   </div>
   <div class="row" style="flex-direction:column;align-items:stretch">
     <b>의견 남기기</b>
@@ -93,17 +97,24 @@ const KINDS = {
   '벙커 걸이책상 2000(2.0×0.55)': {w:1.99,d:0.55,h:0.03,c:0xf5f5f5,y:0.76},
   '모니터 27인치(책상 위)': {w:0.62,d:0.2,h:0.45,c:0x111111,y:0.79},
   '컴퓨터 본체':          {w:0.22,d:0.45,h:0.45,c:0x444444},
+  '빔프로젝터(벙커 위)':  {w:0.3,d:0.25,h:0.12,c:0xeeeeee,y:1.65},
+  '빔 화면 100인치(벽)':  {w:2.21,d:0.02,h:1.25,c:0xfafafa,y:1.0},
   '러그(1.6×2.3)':         {w:1.6,d:2.3,h:0.02,c:0xc9b79c},
 };
-const DEFAULT = [
-  {k:'2인 소파(1.5×0.85)',lv:0,x:1.0,z:3.3,r:0},
-  {k:'TV장(1.6×0.4)',lv:0,x:1.4,z:0.3,r:0},
-  {k:'러그(1.6×2.3)',lv:0,x:1.5,z:1.8,r:1},
-    {k:'책상(1.4×0.7)',lv:0,x:2.6,z:3.4,r:2},
-  {k:'식탁 2인(0.8×0.8)',lv:0,x:4.4,z:2.4,r:0},
-  {k:'퀸 침대(1.5×2.0)',lv:1,x:8.0,z:2.6,r:1},
-  {k:'행거(1.2×0.5)',lv:1,x:6.4,z:0.35,r:0},
+const DEFAULT = [];   // 기본 = 가구 없음
+const BASE_MOVIE = [
+  {k:'벙커침대 더블(2.1×1.45, 높이 1.8)',lv:0,x:1.6,z:0.73,r:0},
+  {k:'2인 소파(1.5×0.85)',lv:0,x:1.6,z:0.5,r:0},
+  {k:'빔프로젝터(벙커 위)',lv:0,x:1.6,z:1.2,r:0},
+  {k:'빔 화면 100인치(벽)',lv:0,x:1.8,z:3.78,r:0},
 ];
+const PRESETS = {
+  '빈 집': [],
+  '영화 볼 때 (레이싱 시트는 계단 밑)': [...BASE_MOVIE,
+    {k:'심레이싱 시트 접음(1.06×0.83)',lv:0,x:4.4,z:0.42,r:0}],
+  '레이싱할 때 (시트를 화면 앞에)': [...BASE_MOVIE,
+    {k:'심레이싱 시트 펼침(1.55×0.83)',lv:0,x:1.8,z:2.3,r:1}],
+};
 
 // ── 장면 ──
 const renderer = new THREE.WebGLRenderer({antialias:true});
@@ -264,7 +275,7 @@ function select(g){
   if (g) g.userData.body.material.emissive.setHex(0x224488);
   document.getElementById('sel').textContent = g ? g.userData.f.k : '없음';
 }
-const KEY = 'room922-layout-v3', KEY2 = 'room922-shape-v5';
+const KEY = 'room922-layout-v4', KEY2 = 'room922-shape-v5';
 function save(){ localStorage.setItem(KEY, JSON.stringify(items.map(g=>g.userData.f))); }
 function loadItems(list){
   items.forEach(g=>g.parent.remove(g)); items=[]; select(null);
@@ -340,7 +351,7 @@ document.getElementById('rot').onclick = ()=>{ if(!selected) return;
   selected.userData.f.r = ((selected.userData.f.r||0)+1)%4; clampItem(selected); save(); };
 document.getElementById('del').onclick = ()=>{ if(!selected) return;
   selected.parent.remove(selected); items = items.filter(g=>g!==selected); select(null); save(); };
-document.getElementById('reset').onclick = ()=>{ if (confirm('처음 배치로 되돌릴까요?')){ loadItems(DEFAULT); save(); } };
+document.getElementById('reset').onclick = ()=>{ if (confirm('가구를 모두 치울까요?')){ loadItems(DEFAULT); save(); } };
 document.getElementById('share').onclick = async ()=>{
   const data = {items: items.map(g=>g.userData.f), shape, memo: document.getElementById('memo').value.trim()};
   const enc = btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/\+/g,'-').replace(/\//g,'_');
@@ -349,6 +360,9 @@ document.getElementById('share').onclick = async ()=>{
   try { await navigator.clipboard.writeText(url); msg.textContent = '링크를 복사했어요. 카톡에 붙여 넣어 보내세요.'; }
   catch(e){ prompt('아래 링크를 길게 눌러 복사하세요', url); }
 };
+const presetSel = document.getElementById('preset');
+Object.keys(PRESETS).forEach(k=>{ const o=document.createElement('option'); o.textContent=k; presetSel.appendChild(o); });
+document.getElementById('loadPreset').onclick = ()=>{ loadItems(PRESETS[presetSel.value]); items.forEach(clampItem); save(); };
 document.getElementById('stairDir').onclick = ()=>{ shape.rev = !shape.rev; applyShape(); };
 document.getElementById('mirror').onclick = ()=>{ shape.mirror = !shape.mirror; applyShape(); };
 function setView(v){
