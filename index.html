@@ -162,9 +162,6 @@ function buildShell(stairToWindow){
   const CL_Z1 = 2.3;
   box(0.6, 2.4, CL_Z1-0.9, LOFT_X+0.05, 0, 0.9, 0xe8d9c0);
   label('붙박이장(가로)', LOFT_X+0.35, 1.7, (0.9+CL_Z1)/2);
-  // 붙박이장에 붙은 작은 고정 테이블
-  box(0.7, 0.04, 0.5, LOFT_X-0.65, 0.74, CL_Z1-0.55, 0xf0f0f0);
-  box(0.05, 0.74, 0.05, LOFT_X-0.4, 0, CL_Z1-0.3, 0xbbbbbb);
   // 욕실: 붙박이장 바로 뒤
   box(T, H1, CL_Z1, L-2.4, 0, 0, WALL, 0.9);
   box(L-2.4-(LOFT_X+0.65), H1, T, LOFT_X+0.65, 0, CL_Z1, WALL, 0.9);
