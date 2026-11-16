@@ -155,21 +155,27 @@ function buildShell(stairToWindow){
   box(0.45, 0.5, W, 0, 0, 0, 0xe2cfa8);
   label('큰 창 · 창 밑 수납', 0.3, 2.4, W/2);
   // ── 복층 아래(입구 쪽) ──
-  // 주방(계단과 같은 벽, 복층 아래): 싱크대 + 세탁기
-  box(2.0, 0.85, 0.6, LOFT_X+0.3, 0, 0, 0x9a9a9a);
-  label('주방·세탁기', LOFT_X+1.3, 1.3, 0.3);
-  // 붙박이장(계단 맞은편 벽, 욕실과 붙어 있음 — 앞에 서면 계단을 등짐)
-  box(1.3, 2.4, 0.6, LOFT_X+0.3, 0, W-0.6, 0xe8d9c0);
-  label('붙박이장', LOFT_X+0.95, 1.6, W-0.3);
-  // 욕실(붙박이장 바로 옆)
-  box(T, H1, 1.7, LOFT_X+1.6, 0, W-1.7, WALL, 0.9);
-  box(1.6, H1, T, LOFT_X+1.6, 0, W-1.7-T, WALL, 0.9);
-  box(1.6, 0.02, 1.7, LOFT_X+1.6, 0, W-1.7, 0x777777);
-  label('욕실', LOFT_X+2.4, 1.6, W-0.85);
-  // 현관(맨 끝 가운데 문)
-  box(1.0, 0.01, 1.4, L-1.0, 0, 1.75, 0xbcbcbc);
-  box(0.05, 2.1, 0.9, L-0.05, 0, 2.0, 0x667788);
-  label('현관문', L-0.5, 1.6, 2.45);
+  // 주방(계단 맞은편 벽, 복층 아래 → 현관 복도까지)
+  box(2.2, 0.85, 0.6, LOFT_X+0.1, 0, W-0.6, 0x9a9a9a);
+  label('주방·세탁기', LOFT_X+1.2, 1.3, W-0.3);
+  // 붙박이장: 계단 쪽, 복층 가장자리에 가로로(문이 창 쪽을 봄)
+  const CL_Z1 = 2.3;
+  box(0.6, 2.4, CL_Z1-0.9, LOFT_X+0.05, 0, 0.9, 0xe8d9c0);
+  label('붙박이장(가로)', LOFT_X+0.35, 1.7, (0.9+CL_Z1)/2);
+  // 붙박이장에 붙은 작은 고정 테이블
+  box(0.7, 0.04, 0.5, LOFT_X-0.65, 0.74, CL_Z1-0.55, 0xf0f0f0);
+  box(0.05, 0.74, 0.05, LOFT_X-0.4, 0, CL_Z1-0.3, 0xbbbbbb);
+  // 욕실: 붙박이장 바로 뒤
+  box(T, H1, CL_Z1, L-2.4, 0, 0, WALL, 0.9);
+  box(L-2.4-(LOFT_X+0.65), H1, T, LOFT_X+0.65, 0, CL_Z1, WALL, 0.9);
+  box(1.75, 0.02, CL_Z1, LOFT_X+0.65, 0, 0, 0x777777);
+  label('욕실(붙박이장 뒤)', LOFT_X+1.5, 1.6, 1.1);
+  // 현관(복도 끝)
+  box(1.0, 0.01, W-CL_Z1-0.1, L-1.0, 0, CL_Z1+0.1, 0xbcbcbc);
+  box(0.05, 2.1, 0.9, L-0.05, 0, CL_Z1+0.3, 0x667788);
+  label('현관문', L-0.5, 1.6, CL_Z1+0.75);
+  box(0.6, 2.0, CL_Z1, L-1.0, 0, 0, 0xe8d9c0);
+  label('신발장·수납', L-0.7, 1.2, 1.1);
 
   // ── 2층(복층) ──
   box(L-LOFT_X, SLAB, W, LOFT_X, H1, 0, 0xcaa178, 1, loft);
@@ -256,7 +262,7 @@ function select(g){
   if (g) g.userData.body.material.emissive.setHex(0x224488);
   document.getElementById('sel').textContent = g ? g.userData.f.k : '없음';
 }
-const KEY = 'room922-layout-v3', KEY2 = 'room922-shape-v4';
+const KEY = 'room922-layout-v3', KEY2 = 'room922-shape-v5';
 function save(){ localStorage.setItem(KEY, JSON.stringify(items.map(g=>g.userData.f))); }
 function loadItems(list){
   items.forEach(g=>g.parent.remove(g)); items=[]; select(null);
