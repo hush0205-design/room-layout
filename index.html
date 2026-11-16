@@ -64,7 +64,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ── 치수(미터, 추정) ──
 const L = 9.6, W = 3.8;          // 1층 길이·폭
-const H1 = 2.6, SLAB = 0.2, H2 = 2.3;  // 1층 높이, 복층 바닥 두께, 2층 높이
+const H1 = 2.5, SLAB = 0.2, H2 = 1.35;  // 1층 높이, 복층 바닥 두께, 2층 높이
 const TOP = H1 + SLAB + H2;      // 전체 층고(거실 쪽)
 const LOFT_X = 5.3;              // 2층이 시작되는 지점(여기부터 오른쪽 끝까지 2층)
 const Y2 = H1 + SLAB;            // 2층 바닥 높이
@@ -175,7 +175,7 @@ function buildShell(stairToWindow){
   box(L-LOFT_X, SLAB, W, LOFT_X, H1, 0, 0xcaa178, 1, loft);
   // 나무 난간(거실 쪽 트인 면, 계단 자리만 비움)
   box(0.06, 0.9, W-0.85, LOFT_X, Y2, 0.85, WOOD, 0.8, loft);
-  label('2층 (복층)', 7.4, Y2+H2-0.2, W/2, loft, 0.6);
+  label('2층 (복층, 천장 낮음)', 7.4, Y2+H2+0.3, W/2, loft, 0.6);
 
   // ── 계단: 거실 쪽 옆벽을 따라, 위 끝이 복층 가장자리 ──
   const n = 12, run = 0.18, len = n*run, rise = (H1+SLAB)/n, sw = 0.8;
